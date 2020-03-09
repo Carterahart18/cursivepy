@@ -1,4 +1,2 @@
-
-
 clean :
 	rm -f ./dist/*
