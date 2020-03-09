@@ -41,7 +41,7 @@ def _download_file(url, file_name):
         print("File", file_name, "already exists")
         return
 
-    print("Downloading", file_name, "from", url, " ... ", end="")
+    print("Downloading", file_name, "from", url, end=" ...\t")
     urllib.request.urlretrieve(url, file_path)
     print("Done")
 
@@ -70,11 +70,27 @@ def _load_images(file_name):
     """
     file_path = _get_file_dir(file_name)
 
+    # Loads the image interpreting each byte as an unsigned int
+    print("Loading image", file_name, end="...\t")
     with gzip.open(file_path, 'rb') as f:
         data = np.frombuffer(f.read(), np.uint8, offset=16)
+    print("Done")
 
-    # Split every img_size th line into a new row
+    # The initial format is a 1D array of pixels where every ${img_size} bytes
+    # represents a single image
+    print("\t>", "Loaded", len(data), "pixels")
+
+
+    # We'll split every ${img_size} bytes into it's own array. Each element of data is
+    # now a ${img_size} length array representing one image. Reshape converts our array
+    # into a new N x M shape. -1 tells numpy to infer the dimenson length from the other
+    # parameter
     data = data.reshape(-1, img_size)
+
+    total_images = len(data)
+    image_size = len(data[0])
+
+    print("\t> Parsed", total_images, "images, each", image_size, "pixels")
     return data
 
 def _load_dataset():
@@ -108,7 +124,17 @@ def load_dataset(_output_dir):
     with open(cache_file, 'rb') as f:
         dataset = pickle.load(f)
 
-    print(dataset)
+    # Map image data from [0 to 255] to [0 to 1]
+    for key in ('train_img', 'test_img'):
+        dataset[key] = dataset[key].astype(np.float32)
+        dataset[key] /= 255.0
+
+    # Convert images to 28 x 28 arrays
+    # TODO: Get rid of second dimension ?
+    for key in ('train_img', 'test_img'):
+        dataset[key] = dataset[key].reshape(-1, 1, 28, 28)
+
+
 
 
 load_dataset(os.path.dirname(os.path.abspath(__file__)))
