@@ -48,15 +48,18 @@ def _download_file(url, file_name):
 
 def _load_solutions(file_name):
     """
-    Loads an array of solutions to each image
-
     Parameters
     ----------
     file_name : The name of the solution gzip
+
+    Returns
+    ----------
+    An array of numbers corresponding to image solutions
     """
     file_path = _get_file_dir(file_name)
     with gzip.open(file_path, 'rb') as f:
         solutions = np.frombuffer(f.read(), np.uint8, offset=8)
+
     return solutions
 
 
@@ -67,6 +70,10 @@ def _load_images(file_name):
     Parameters
     ----------
     file_name : The name of the solution gzip
+
+    Returns
+    ----------
+    An array of images, each represented as an array of pixels
     """
     file_path = _get_file_dir(file_name)
 
@@ -80,7 +87,6 @@ def _load_images(file_name):
     # represents a single image
     print("\t>", "Loaded", len(data), "pixels")
 
-
     # We'll split every ${img_size} bytes into it's own array. Each element of data is
     # now a ${img_size} length array representing one image. Reshape converts our array
     # into a new N x M shape. -1 tells numpy to infer the dimenson length from the other
@@ -92,6 +98,7 @@ def _load_images(file_name):
 
     print("\t> Parsed", total_images, "images, each", image_size, "pixels")
     return data
+
 
 def _load_dataset():
     dataset = {}
@@ -108,11 +115,28 @@ def _save_file(file_name, data):
         pickle.dump(data, f, -1)
 
 
-def load_dataset(_output_dir):
-    # Set the output directory
-    global output_dir
-    output_dir = _output_dir
+def _reshape_solution_to_bitmap(solution_array):
+    """
+    Parameters
+    ----------
+    solution_array: Array of numbers corresponding to image solutions
 
+    Returns
+    An array of bitmaps, which each have 10 elements representing 0 - 9 where the index
+    represents the number and 0 and 1 represents the answer.
+    Example: 3 = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+    """
+
+    bitmap_array = np.zeros((solution_array.size, 10))
+
+    for index, row in enumerate(bitmap_array):
+        value = solution_array[index]
+        row[value] = 1
+
+    return bitmap_array
+
+
+def load_dataset(normalize=True, flatten=True, bitmapped=False):
     if not os.path.exists(cache_file):
         # Download each file if necessary
         for value in files.values():
@@ -124,17 +148,25 @@ def load_dataset(_output_dir):
     with open(cache_file, 'rb') as f:
         dataset = pickle.load(f)
 
-    # Map image data from [0 to 255] to [0 to 1]
-    for key in ('train_img', 'test_img'):
-        dataset[key] = dataset[key].astype(np.float32)
-        dataset[key] /= 255.0
+    if normalize:
+        # Map image data from [0 to 255] to [0 to 1]
+        for key in ('train_img', 'test_img'):
+            dataset[key] = dataset[key].astype(np.float32)
+            dataset[key] /= 255.0
 
-    # Convert images to 28 x 28 arrays
-    # TODO: Get rid of second dimension ?
-    for key in ('train_img', 'test_img'):
-        dataset[key] = dataset[key].reshape(-1, 1, 28, 28)
+    if not flatten:
+        # Convert images to 28 x 28 arrays
+        # TODO: Get rid of second dimension ?
+        for key in ('train_img', 'test_img'):
+            dataset[key] = dataset[key].reshape(-1, 1, 28, 28)
+
+    if bitmapped:
+        for key in ('train_label', 'test_label'):
+            dataset[key] = _reshape_solution_to_bitmap(dataset[key])
+
+    return (
+        (dataset['train_img'], dataset['train_label']),
+        (dataset['test_img'], dataset['test_label']))
 
 
-
-
-load_dataset(os.path.dirname(os.path.abspath(__file__)))
+load_dataset()
