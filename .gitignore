@@ -1,6 +1,9 @@
 
+dist/
+
 # VSCode
 .vscode/
 
 # Python
 .env
+__pycache__/
