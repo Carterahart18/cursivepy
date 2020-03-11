@@ -10,7 +10,10 @@ import os
 import numpy as np
 from PIL import Image
 
-output_dir = os.path.dirname(os.path.abspath(__file__)) + '/dist'
+output_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
+
+print(output_dir)
+
 cache_file = 'data.pkl'
 img_size = 784  # TODO: Don't hard code ?
 url_base = 'http://yann.lecun.com/exdb/mnist/'
