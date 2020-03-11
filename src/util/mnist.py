@@ -1,19 +1,10 @@
-# import working as w
-
-# print(w.MyFunc())
-
-
 import urllib.request
 import gzip
 import pickle
 import os
-import numpy as np
-from PIL import Image
+import numpy
 
 output_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
-
-print(output_dir)
-
 cache_file = 'data.pkl'
 img_size = 784  # TODO: Don't hard code ?
 url_base = 'http://yann.lecun.com/exdb/mnist/'
@@ -61,7 +52,7 @@ def _load_solutions(file_name):
     """
     file_path = _get_file_dir(file_name)
     with gzip.open(file_path, 'rb') as f:
-        solutions = np.frombuffer(f.read(), np.uint8, offset=8)
+        solutions = numpy.frombuffer(f.read(), numpy.uint8, offset=8)
 
     return solutions
 
@@ -83,7 +74,7 @@ def _load_images(file_name):
     # Loads the image interpreting each byte as an unsigned int
     print('Loading image', file_name, end='...\t')
     with gzip.open(file_path, 'rb') as f:
-        data = np.frombuffer(f.read(), np.uint8, offset=16)
+        data = numpy.frombuffer(f.read(), numpy.uint8, offset=16)
     print('Done')
 
     # The initial format is a 1D array of pixels where every ${img_size} bytes
@@ -130,7 +121,7 @@ def _reshape_solution_to_bitmap(solution_array):
     Example: 3 = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
     """
 
-    bitmap_array = np.zeros((solution_array.size, 10))
+    bitmap_array = numpy.zeros((solution_array.size, 10))
 
     for index, row in enumerate(bitmap_array):
         value = solution_array[index]
@@ -154,7 +145,7 @@ def load_dataset(normalize=True, flatten=True, bitmapped=False):
     if normalize:
         # Map image data from [0 to 255] to [0 to 1]
         for key in ('train_images', 'test_images'):
-            dataset[key] = dataset[key].astype(np.float32)
+            dataset[key] = dataset[key].astype(numpy.float32)
             dataset[key] /= 255.0
 
     if not flatten:
