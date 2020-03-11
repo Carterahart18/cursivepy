@@ -2,10 +2,34 @@ import os
 import numpy as np
 import pickle
 from util.mnist import load_dataset
-from networks.neural_network_v3 import NeuralNetworkV3
+from networks.neural_network import NeuralNetwork
+
+dist_path = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
+
 
 def get_batch_mask(total_size, batch_size):
     return np.random.choice(total_size, batch_size)
 
-def test_network():
-    pass
+
+def test_network(iterations, batch_size):
+    # Load network
+    network = NeuralNetwork.load_network(dist_path, "network.pkl")
+
+    # Load testing data
+    (training_data, testing_data) = load_dataset(normalize=True, bitmapped=True)
+    (test_images, test_solutions) = testing_data
+
+    total_size = test_images.shape[0]
+
+    print("  Testing Accuracy  ")
+    print("--------------------")
+
+    for i in range(iterations):
+        # Get random image / solution batch pair
+        batch_mask = get_batch_mask(total_size, batch_size)
+        images_batch = test_images[batch_mask]
+        solutions_batch = test_solutions[batch_mask]
+
+        # Train network
+        test_acc = network.accuracy(images_batch, solutions_batch) * 100
+        print(f"        {test_acc:05.2f}%       ")

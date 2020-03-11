@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pickle
 from util.mnist import load_dataset
-from networks.neural_network_v3 import NeuralNetworkV3
+from networks.neural_network import NeuralNetwork
+
+dist_path = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
 
 
 def get_batch_mask(total_size, batch_size):
@@ -16,7 +18,7 @@ def train_network(iterations, batch_size, epoch_length, save_network=False):
     (test_images, test_solutions) = testing_data
 
     # Create fresh Neutral Network
-    network = NeuralNetworkV3(layer_sizes=[784, 50, 10], learning_rate=1)
+    network = NeuralNetwork(layer_sizes=[784, 50, 10])
 
     total_size = train_images.shape[0]
 
@@ -41,3 +43,5 @@ def train_network(iterations, batch_size, epoch_length, save_network=False):
             print(f"        {test_acc:05.2f}%       ")
 
     print("\n\n...\nTraining Complete\n")
+
+    network.save_network(dist_path, "network.pkl")
