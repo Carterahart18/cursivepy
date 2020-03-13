@@ -2,7 +2,7 @@
 
 ## About
 
-"Hello Handwriting" is a simple project which can train a Neural Network to recognize simple handwritten digits.
+"Hello Handwriting" is a simple project which can train a Neural Network to recognize simple handwritten digits, and then test the network either against training data or against your own handwritten digits.
 
 ## Getting Started
 
@@ -17,4 +17,7 @@ This script will automatically download the training and testing data from [MNSI
 
 ## TODO
 
-* Create a UI where the User can draw on a 28 x 28 grid and the program will detect it in real time!
+* Fill out setup, installation, and learning, challenges, motivations, learnings and testing README
+* Connect Paint program to trained neural network
+* Create a wrapper UI around the paint program
+* (Optional) Create a wrapper UI around the Machine Learning

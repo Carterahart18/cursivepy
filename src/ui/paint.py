@@ -1,11 +1,8 @@
 from tkinter import *
-from tkinter.colorchooser import askcolor
-import numpy
-import random
-import math
-from PIL import ImageGrab, Image, ImageDraw
+from numpy import zeros
+from math import sqrt
 
-CANVAS_SIZE = 280
+CANVAS_SIZE = 500
 IMAGE_SIZE = 28
 PIXEL_SIZE = CANVAS_SIZE / IMAGE_SIZE
 
@@ -13,14 +10,13 @@ PIXEL_SIZE = CANVAS_SIZE / IMAGE_SIZE
 class Paint(object):
 
     def __init__(self):
-        self.image_data = numpy.zeros((IMAGE_SIZE, IMAGE_SIZE))
-
         self.setup_frame()
         self.setup_fields()
         self.root.mainloop()
 
     def setup_frame(self):
         self.root = Tk()
+        self.root.title("Handwritten Digit Recognition")
 
         self.clear_button = Button(self.root, text='Clear', command=self.clear)
         self.clear_button.grid(row=0, column=0)
@@ -29,15 +25,15 @@ class Paint(object):
                              bg='black',
                              width=CANVAS_SIZE,
                              height=CANVAS_SIZE)
-
         self.canvas.grid(row=1, columnspan=5)
-
-    def setup_fields(self):
-        self.prev_col = None
-        self.prev_row = None
-        self.brush_size = 2
         self.canvas.bind('<B1-Motion>', self.paint)
         self.canvas.bind('<ButtonRelease-1>', self.reset)
+
+    def setup_fields(self):
+        self.brush_size = 2
+        self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
+        self.prev_col = None
+        self.prev_row = None
 
     def draw_image(self, event):
         self.canvas.delete("all")
@@ -56,16 +52,16 @@ class Paint(object):
 
     def brush(self, row, col):
         radius = self.brush_size / 2
-        min_row = int(row - radius)
-        max_row = int(row + radius + 1)
-        min_col = int(col - radius)
-        max_col = int(col + radius + 1)
+        min_row = max(0, int(row - radius))
+        max_row = min(28, int(row + radius + 1))
+        min_col = max(0, int(col - radius))
+        max_col = min(28, int(col + radius + 1))
         for i in range(min_row, max_row):
             for j in range(min_col, max_col):
                 # Pythagorean theorum to get distance from center
                 row_diff = i - row
                 col_diff = j - col
-                dist = math.sqrt(pow(row_diff, 2) + pow(col_diff, 2))
+                dist = sqrt(pow(row_diff, 2) + pow(col_diff, 2))
 
                 if dist < radius:
                     self.image_data[i][j] = 1
@@ -76,8 +72,8 @@ class Paint(object):
 
     def paint(self, event):
         num_fill_points = 10
-        col = int(event.x // PIXEL_SIZE)
-        row = int(event.y // PIXEL_SIZE)
+        col = event.x / PIXEL_SIZE
+        row = event.y / PIXEL_SIZE
 
         if col >= IMAGE_SIZE or col < 0:
             return
@@ -93,13 +89,12 @@ class Paint(object):
 
             pointSet = set([])
             for i in range(1, num_fill_points + 1):
-                col_point = int(self.prev_col + dcol * i)
-                row_point = int(self.prev_row + drow * i)
+                col_point = self.prev_col + dcol * i
+                row_point = self.prev_row + drow * i
                 pointSet.add((row_point, col_point))
 
             for point in pointSet:
                 self.brush(point[0], point[1])
-                self.image_data[point[0]][point[1]] = 1
         else:
             self.brush(row, col)
 
@@ -110,7 +105,7 @@ class Paint(object):
 
     def clear(self):
         self.canvas.delete("all")
-        self.image_data = numpy.zeros((IMAGE_SIZE, IMAGE_SIZE))
+        self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
 
     def reset(self, event):
         self.prev_col = None
