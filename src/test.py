@@ -4,7 +4,7 @@ import argparse
 import scripts.test_network as tester
 from networks.neural_network import NeuralNetwork
 
-DEFAULT_FILE = '../dist/network.pkl'
+DEFAULT_FILE = 'dist/network.pkl'
 DEFAULT_ITERATIONS = 100
 DEFAULT_BATCH = 500
 
@@ -28,7 +28,7 @@ def main():
 
     iterations = DEFAULT_ITERATIONS if not args.iterations else args.iterations
     batch_size = DEFAULT_BATCH if not args.batchsize else args.batchsize
-    file_path = CURR_DIR
+    file_path = CURR_DIR + '../'
     file_path += DEFAULT_FILE if not args.file else args.file
     file_path = os.path.realpath(file_path)
 
