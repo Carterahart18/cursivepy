@@ -3,10 +3,10 @@ import argparse
 from ui.app import App
 from networks.neural_network import NeuralNetwork
 
-DEFAULT_FILE = "dist/network.pkl"
+DEFAULT_FILE = '../dist/network.pkl'
 DEFAULT_LEARNING_RATE = 0.05
 
-CURR_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
+CURR_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
 
     args = parser.parse_args()
 
-    file_path = CURR_DIR + '../'
+    file_path = CURR_DIR
     file_path += DEFAULT_FILE if not args.file else args.file
     learning_rate = DEFAULT_LEARNING_RATE if not args.learning else args.learning
 
@@ -34,5 +34,5 @@ def main():
     app.start()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

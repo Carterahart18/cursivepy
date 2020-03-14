@@ -52,6 +52,17 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
             print(f"       {percent_complete:05.2f}%       ")
 
 
-    print("\n\n...\nTraining Complete\n")
+    print("\nTraining Complete !\n")
 
-    network.save_network(dist_path + "/network.pkl")
+    if save_network:
+        network.save_network(dist_path + "/network.pkl")
+    else:
+        answer = None
+        answers = ["y", "yes", "n", "no"]
+        while answer not in answers:
+            answer = input("Would you like to save this network (y/n)? ")
+            answer = answer.lower()
+            if answer not in answers:
+                print("Please response (y/n).")
+        if answer == "y" or answer == "yes":
+            network.save_network(dist_path + "/network.pkl")

@@ -33,6 +33,7 @@ def main():
     save_network = False if not args.save else args.save
 
     epoch_length = iterations // 30
+    epoch_length = 1 if epoch_length < 0 else epoch_length
     trainer.train_network(iterations=iterations,
                           batch_size=batch_size,
                           hidden_layers=hidden_layers,
