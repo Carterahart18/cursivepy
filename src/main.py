@@ -1,6 +1,6 @@
 import os
 import argparse
-import ui.window as UI
+from ui.app import App
 from networks.neural_network import NeuralNetwork
 
 dist_path = os.path.dirname(os.path.abspath(__file__)) + '/../dist'
@@ -18,7 +18,7 @@ def main():
     file_path += "network.pkl" if not args.file else args.file
 
     network = NeuralNetwork.load_network(file_path)
-    app = UI.Window(network=network)
+    app = App(network=network)
     app.start()
 
 

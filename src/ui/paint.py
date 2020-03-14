@@ -13,40 +13,27 @@ class Paint():
         self.root = root
         self.on_paint_callback = on_paint_callback
 
-        self.init_fields()
-        self.init_canvas()
-
-    def init_fields(self):
+        # Init Fields
         self.brush_size = 2
         self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
         self.prev_col = None
         self.prev_row = None
-
-    def init_canvas(self):
         self.WIDTH = self.root.winfo_width()
         self.HEIGHT = self.root.winfo_width()
 
+        # Init Canvas
         self.canvas = Canvas(self.root,
                              bg='black',
                              width=CANVAS_SIZE,
                              height=CANVAS_SIZE)
         self.canvas.grid(row=0, column=0)
-        self.canvas.bind('<B1-Motion>', self.paint)
-        self.canvas.bind('<ButtonRelease-1>', self.reset)
-
-        self.clear_button = Button(self.root,
-                                   width=30,
-                                   cursor="pointinghand",
-                                   text='Clear')
-        self.clear_button.grid(row=1, column=0, padx=10, pady=10)
-        self.clear_button.config(font='Arial 14 bold')
-        self.clear_button.bind("<ButtonPress>", self.on_clear_down)
-        self.clear_button.bind("<ButtonRelease>", self.on_clear_up)
+        self.canvas.bind('<B1-Motion>', self._on_paint_down)
+        self.canvas.bind('<ButtonRelease-1>', self._on_paint_up)
 
     def draw_image(self):
         """
         Draws a pixelated image using canvas rectangles using the current
-        IMAGE_SIZE x IMAGE_SIZE data
+        IMAGE_SIZE x IMAGE_SIZE data.
         """
         self.canvas.delete("all")
         for row in range(IMAGE_SIZE):
@@ -63,6 +50,15 @@ class Paint():
                                              outline=value)
 
     def brush(self, row, col):
+        """
+        Draws a brush dot with the diameter of the current brush_size at coordinates at
+        (row, col)
+
+        Parameters
+        ----------
+        row: the row in the IMAGE_SIZE x IMAGE_SIZE image to draw to
+        col: the column in the IMAGE_SIZE x IMAGE_SIZE imge to draw to
+        """
         radius = self.brush_size / 2
         min_row = max(0, int(row - radius))
         max_row = min(28, int(row + radius + 1))
@@ -78,19 +74,30 @@ class Paint():
                 if dist < radius:
                     self.image_data[i][j] = 1
                 elif dist < radius + 1:
+                    # Draw blurred edge. Never subtract from value
                     self.image_data[i][j] = \
                         max(radius + 1 - dist, self.image_data[i][j])
 
-    def paint(self, event):
+    def _on_paint_down(self, event):
+        """
+        Draws a brush stroke from the previous (row, col) coordinates to the current event
+        coordinates.
+
+        Parameters
+        ----------
+        event: the event object on the canvas containing the current (x, y) coordinates
+        """
         num_fill_points = 10
         col = event.x / PIXEL_SIZE
         row = event.y / PIXEL_SIZE
 
+        # If drawing out of bounds, quit
         if col >= IMAGE_SIZE or col < 0:
             return
         if row >= IMAGE_SIZE or row < 0:
             return
 
+        # Draw a line from prev coords to current coords
         if self.prev_col != None and self.prev_row != None:
             col_diff = col - self.prev_col
             row_diff = row - self.prev_row
@@ -98,15 +105,18 @@ class Paint():
             dcol = col_diff / (num_fill_points + 1)
             drow = row_diff / (num_fill_points + 1)
 
+            # Calculate points in line from prev coords to current coords
             pointSet = set([])
             for i in range(1, num_fill_points + 1):
                 col_point = self.prev_col + dcol * i
                 row_point = self.prev_row + drow * i
                 pointSet.add((row_point, col_point))
 
+            # Draw line
             for point in pointSet:
                 self.brush(point[0], point[1])
         else:
+            # Else simply draw a dot
             self.brush(row, col)
 
         self.prev_col = col
@@ -117,15 +127,17 @@ class Paint():
         # Send image data to parent
         self.on_paint_callback(self.image_data)
 
-    def on_clear_down(self, event):
+    def clear(self):
+        """
+        Clears the images data and canvas of all data
+        """
         self.canvas.delete("all")
         self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
-        self.clear_button.config(highlightbackground='#efefef')
 
-    def on_clear_up(self, event):
-        self.clear_button.config(highlightbackground='#ffffff')
-
-    def reset(self, event):
+    def _on_paint_up(self, event):
+        """
+        Resets the previous row and column now that painting has stopped
+        """
         self.prev_col = None
         self.prev_row = None
 
@@ -134,6 +146,9 @@ if __name__ == '__main__':
     root = Tk()
     root.title("Handwritten Digit Recognition")
 
-    paint = Paint(root)
+    def on_paint_callback(image):
+        pass
+
+    paint = Paint(root, on_paint_callback)
 
     root.mainloop()

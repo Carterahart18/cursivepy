@@ -54,6 +54,18 @@ class NeuralNetwork():
     def set_layers(self, layers):
         self.layers = layers
 
+    def set_learning_rate(self, learning_rate):
+        self.learning_rate = learning_rate
+
+    def convertResultToSolution(self, solution_array):
+        bitmap_array = numpy.zeros((solution_array.size, 10))
+
+        for index, row in enumerate(bitmap_array):
+            value = solution_array[index]
+            row[value] = 1
+
+        return bitmap_array
+
     def convertOutputToResult(self, output_batch):
         """
         Parameters
