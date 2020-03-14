@@ -131,6 +131,9 @@ def _reshape_solution_to_bitmap(solution_array):
 
 
 def load_dataset(normalize=True, flatten=True, bitmapped=False):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     if not os.path.exists(_get_file_dir(cache_file)):
         # Download each file if necessary
         for value in files.values():
