@@ -209,5 +209,6 @@ class NeuralNetwork():
             network = NeuralNetwork(layer_sizes=[0])
             network.set_layers(layers)
             return network
-        except IOError:
+        except IOError as e:
             print("Failed to load network from", file_path)
+            raise e

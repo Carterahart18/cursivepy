@@ -26,14 +26,34 @@ To configure the hidden layers of the network use `-l [layer_size...]`.
 
 For more information, run `python src/train.py -h`.
 
-## Testing the network
+## CursivePy Training Program
 
-Once a network has been saved to disk, you can run the `src/main.py` script to open a GUI that allows you to draw your own custom characters!
+Once you have a `network.pkl` file saved to disk, you can run the main CursivePy application:
 
+```shell
+python src/main.py -f [path_to_network.pkl]
+```
 
-## TODO
+This GUI application has a 28 x 28 canvas which you can draw on have have the network guess against in real time. If the network's prediction is right its guess will appear in green and if wrong it will appear in red. The program assumes that the anser is the target number printed at the top of the window.
 
-* Fill out setup, installation, and learning, challenges, motivations, learnings and testing README
-* Connect Paint program to trained neural network
-* Create a wrapper UI around the paint program
-* (Optional) Create a wrapper UI around the Machine Learning
+If you mis-draw you can clear the page. If you want the network to learn against your example, click "Submit". You will get a new random target number and the network will have back-propogated the its results, adjusting each neuron to better match your example.
+
+To configure the rate of learning use `-l <num between 0 and 1>`. The default is 0.05. A higher learning rate means the network will change more drastically per submission, but this can lead to the network overfitting to one or a few examples.
+
+For more information, run `python src/main.py -h`.
+
+## Batch Testing
+
+After you have saved a network to disk you can run the following to test mass batches of testing data aginst the network to measure overall performance:
+
+```shell
+python src/test.py
+```
+
+To load a specific network for use in testing, add the `-f <path>` flag.
+
+To configure the number of testing iterations use `-i <num>`.
+
+To configure the image batch size of each iteration use `-b <num>`.
+
+For more information, run `python src/test.py -h`.

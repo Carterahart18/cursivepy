@@ -11,10 +11,7 @@ def get_batch_mask(total_size, batch_size):
     return np.random.choice(total_size, batch_size)
 
 
-def test_network(iterations, batch_size):
-    # Load network
-    network = NeuralNetwork.load_network(dist_path + "/network.pkl")
-
+def test_network(iterations, batch_size, network):
     # Load testing data
     (training_data, testing_data) = load_dataset(normalize=True, bitmapped=True)
     (test_images, test_solutions) = testing_data
@@ -32,4 +29,4 @@ def test_network(iterations, batch_size):
 
         # Train network
         test_acc = network.accuracy(images_batch, solutions_batch) * 100
-        print(f"        {test_acc:05.2f}%       ")
+        print(f"       {test_acc:05.2f}%")

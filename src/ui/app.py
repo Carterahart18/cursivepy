@@ -7,11 +7,9 @@ import numpy
 
 class App():
 
-    def __init__(self, WIDTH=800, HEIGHT=600, network=None):
-        self.WIDTH = WIDTH
-        self.HEIGHT = HEIGHT
+    def __init__(self, network=None, learning_rate=0.05):
         self.network = network
-        self.network.set_learning_rate(0.05)
+        self.network.set_learning_rate(learning_rate)
 
         self.init_window()
 
@@ -68,13 +66,14 @@ class App():
         self.center_window()
 
     def center_window(self):
-        windowWidth = self.root.winfo_reqwidth()
-        windowHeight = self.root.winfo_reqheight()
+        self.root.update_idletasks()
+        windowWidth = self.root.winfo_width()
+        windowHeight = self.root.winfo_height()
 
-        positionRight = int(
-            self.root.winfo_screenwidth() / 2 - self.WIDTH / 2)
-        positionDown = int(self.root.winfo_screenheight() /
-                           2 - self.HEIGHT / 2)
+        positionRight = int(self.root.winfo_screenwidth() / 2
+                            - windowWidth / 2)
+        positionDown = int(self.root.winfo_screenheight() / 2
+                           - windowHeight / 2)
 
         self.root.geometry("+{}+{}".format(positionRight, positionDown))
 
@@ -91,13 +90,13 @@ class App():
 
     def set_prediction(self, prediction):
         if prediction == None:
-            self.prediction_value.config(text=" ")
+            self.prediction_value.config(text="    ")
+            return
         else:
             if prediction == self.target:
                 self.prediction_value.config(fg="green")
             else:
                 self.prediction_value.config(fg="red")
-
             self.prediction_value.config(text=prediction)
 
     def on_clear_down(self, event):

@@ -23,7 +23,6 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
 
     # Create fresh Neutral Network
     layer_sizes = [784, *hidden_layers, 10]
-    print(layer_sizes)
     network = NeuralNetwork(layer_sizes=layer_sizes)
 
     total_size = train_images.shape[0]
@@ -31,8 +30,8 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
     if batch_size > total_size:
         raise Exception("Batch size exceeds total training examples")
 
-    print("  Training Accuracy  |  Testing Accuracy  ")
-    print("---------------------+--------------------")
+    print("  Training Accuracy  |  Testing Accuracy  |  Percent Complete  ")
+    print("---------------------+--------------------+--------------------")
 
     for i in range(iterations):
         # Get random image / solution batch pair
@@ -47,9 +46,11 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
         if i % epoch_length == 0:
             train_acc = network.accuracy(train_images, train_solutions) * 100
             test_acc = network.accuracy(test_images, test_solutions) * 100
-            print(f"        {train_acc:05.2f}%       ", end="")
-            print("|", end="")
-            print(f"        {test_acc:05.2f}%       ")
+            percent_complete = i / iterations * 100
+            print(f"       {train_acc:05.2f}%        |", end="")
+            print(f"       {test_acc:05.2f}%       |", end="")
+            print(f"       {percent_complete:05.2f}%       ")
+
 
     print("\n\n...\nTraining Complete\n")
 
