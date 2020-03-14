@@ -2,40 +2,52 @@ from tkinter import *
 from numpy import zeros
 from math import sqrt
 
-CANVAS_SIZE = 500
+CANVAS_SIZE = 300
 IMAGE_SIZE = 28
 PIXEL_SIZE = CANVAS_SIZE / IMAGE_SIZE
 
 
-class Paint(object):
+class Paint():
 
-    def __init__(self):
-        self.setup_frame()
-        self.setup_fields()
-        self.root.mainloop()
+    def __init__(self, root, on_paint_callback):
+        self.root = root
+        self.on_paint_callback = on_paint_callback
 
-    def setup_frame(self):
-        self.root = Tk()
-        self.root.title("Handwritten Digit Recognition")
+        self.init_fields()
+        self.init_canvas()
 
-        self.clear_button = Button(self.root, text='Clear', command=self.clear)
-        self.clear_button.grid(row=0, column=0)
-
-        self.canvas = Canvas(self.root,
-                             bg='black',
-                             width=CANVAS_SIZE,
-                             height=CANVAS_SIZE)
-        self.canvas.grid(row=1, columnspan=5)
-        self.canvas.bind('<B1-Motion>', self.paint)
-        self.canvas.bind('<ButtonRelease-1>', self.reset)
-
-    def setup_fields(self):
+    def init_fields(self):
         self.brush_size = 2
         self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
         self.prev_col = None
         self.prev_row = None
 
-    def draw_image(self, event):
+    def init_canvas(self):
+        self.WIDTH = self.root.winfo_width()
+        self.HEIGHT = self.root.winfo_width()
+
+        self.canvas = Canvas(self.root,
+                             bg='black',
+                             width=CANVAS_SIZE,
+                             height=CANVAS_SIZE)
+        self.canvas.grid(row=0, column=0)
+        self.canvas.bind('<B1-Motion>', self.paint)
+        self.canvas.bind('<ButtonRelease-1>', self.reset)
+
+        self.clear_button = Button(self.root,
+                                   width=30,
+                                   cursor="pointinghand",
+                                   text='Clear')
+        self.clear_button.grid(row=1, column=0, padx=10, pady=10)
+        self.clear_button.config(font='Arial 14 bold')
+        self.clear_button.bind("<ButtonPress>", self.on_clear_down)
+        self.clear_button.bind("<ButtonRelease>", self.on_clear_up)
+
+    def draw_image(self):
+        """
+        Draws a pixelated image using canvas rectangles using the current
+        IMAGE_SIZE x IMAGE_SIZE data
+        """
         self.canvas.delete("all")
         for row in range(IMAGE_SIZE):
             for col in range(IMAGE_SIZE):
@@ -68,7 +80,6 @@ class Paint(object):
                 elif dist < radius + 1:
                     self.image_data[i][j] = \
                         max(radius + 1 - dist, self.image_data[i][j])
-        pass
 
     def paint(self, event):
         num_fill_points = 10
@@ -101,11 +112,18 @@ class Paint(object):
         self.prev_col = col
         self.prev_row = row
 
-        self.draw_image(event)
+        self.draw_image()
 
-    def clear(self):
+        # Send image data to parent
+        self.on_paint_callback(self.image_data)
+
+    def on_clear_down(self, event):
         self.canvas.delete("all")
         self.image_data = zeros((IMAGE_SIZE, IMAGE_SIZE))
+        self.clear_button.config(highlightbackground='#efefef')
+
+    def on_clear_up(self, event):
+        self.clear_button.config(highlightbackground='#ffffff')
 
     def reset(self, event):
         self.prev_col = None
@@ -113,4 +131,9 @@ class Paint(object):
 
 
 if __name__ == '__main__':
-    Paint()
+    root = Tk()
+    root.title("Handwritten Digit Recognition")
+
+    paint = Paint(root)
+
+    root.mainloop()

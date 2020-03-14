@@ -11,16 +11,25 @@ def get_batch_mask(total_size, batch_size):
     return np.random.choice(total_size, batch_size)
 
 
-def train_network(iterations, batch_size, epoch_length, save_network=False):
+def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save_network=False):
+
+    if batch_size < 1:
+        raise Exception("Batch size must be at least 1")
+
     # Load data
     (training_data, testing_data) = load_dataset(normalize=True, bitmapped=True)
     (train_images, train_solutions) = training_data
     (test_images, test_solutions) = testing_data
 
     # Create fresh Neutral Network
-    network = NeuralNetwork(layer_sizes=[784, 50, 10])
+    layer_sizes = [784, *hidden_layers, 10]
+    print(layer_sizes)
+    network = NeuralNetwork(layer_sizes=layer_sizes)
 
     total_size = train_images.shape[0]
+
+    if batch_size > total_size:
+        raise Exception("Batch size exceeds total training examples")
 
     print("  Training Accuracy  |  Testing Accuracy  ")
     print("---------------------+--------------------")
@@ -44,4 +53,4 @@ def train_network(iterations, batch_size, epoch_length, save_network=False):
 
     print("\n\n...\nTraining Complete\n")
 
-    network.save_network(dist_path, "network.pkl")
+    network.save_network(dist_path + "/network.pkl")

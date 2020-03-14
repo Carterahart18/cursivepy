@@ -13,7 +13,7 @@ def get_batch_mask(total_size, batch_size):
 
 def test_network(iterations, batch_size):
     # Load network
-    network = NeuralNetwork.load_network(dist_path, "network.pkl")
+    network = NeuralNetwork.load_network(dist_path + "/network.pkl")
 
     # Load testing data
     (training_data, testing_data) = load_dataset(normalize=True, bitmapped=True)

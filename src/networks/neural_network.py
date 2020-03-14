@@ -54,7 +54,7 @@ class NeuralNetwork():
     def set_layers(self, layers):
         self.layers = layers
 
-    def _convertOutputToResult(self, output_batch):
+    def convertOutputToResult(self, output_batch):
         """
         Parameters
         ----------
@@ -94,8 +94,12 @@ class NeuralNetwork():
             layer_output_batch = weight_sum_batch + layer['biases']
             layer_activations_batch_raw.append(layer_output_batch)
 
-            # Apply sigmoid to Layer L + 1 activations
-            layer_output_batch = sigmoid(layer_output_batch)
+            # Experimental
+            if i == len(self.layers) - 1:
+                layer_output_batch = softmax(layer_output_batch)
+            else:
+                # Apply sigmoid to Layer L + 1 activations
+                layer_output_batch = sigmoid(layer_output_batch)
             layer_activations_batch_sig.append(layer_output_batch)
 
             # Layer L + 1 inputs are this layer's outputs
@@ -129,8 +133,8 @@ class NeuralNetwork():
 
         predictions = self.predict(input_batch)
 
-        predictions = self._convertOutputToResult(predictions)
-        solution_batch = self._convertOutputToResult(solution_batch)
+        predictions = self.convertOutputToResult(predictions)
+        solution_batch = self.convertOutputToResult(solution_batch)
 
         accuracy = numpy.sum(predictions == solution_batch) / float(batch_size)
 
@@ -175,8 +179,7 @@ class NeuralNetwork():
             self.layers[i]['biases'] -= self.learning_rate * \
                 layer_gradients[i]['biases']
 
-    def save_network(self, dir_path, file_name):
-        file_path = dir_path + "/" + file_name
+    def save_network(self, file_path):
         try:
             f = open(file_path, 'wb')
             pickle.dump(self.layers, f, -1)
@@ -185,8 +188,7 @@ class NeuralNetwork():
             print("Failed to save network to", file_path)
 
     @staticmethod
-    def load_network(dir_path, file_name):
-        file_path = dir_path + "/" + file_name
+    def load_network(file_path):
         try:
             f = open(file_path, 'rb')
             layers = pickle.load(f)
