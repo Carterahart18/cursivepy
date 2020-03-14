@@ -23,6 +23,7 @@ def main():
 
     file_path = CURR_DIR
     file_path += DEFAULT_FILE if not args.file else args.file
+    file_path = os.path.realpath(file_path)
     learning_rate = DEFAULT_LEARNING_RATE if not args.learning else args.learning
 
     try:

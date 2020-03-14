@@ -30,6 +30,7 @@ def main():
     batch_size = DEFAULT_BATCH if not args.batchsize else args.batchsize
     file_path = CURR_DIR
     file_path += DEFAULT_FILE if not args.file else args.file
+    file_path = os.path.realpath(file_path)
 
     try:
         network = NeuralNetwork.load_network(file_path)

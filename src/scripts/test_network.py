@@ -1,10 +1,6 @@
-import os
 import numpy as np
-import pickle
 from util.mnist import load_dataset
 from networks.neural_network import NeuralNetwork
-
-dist_path = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
 
 
 def get_batch_mask(total_size, batch_size):

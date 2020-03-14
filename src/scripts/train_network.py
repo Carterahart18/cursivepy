@@ -4,7 +4,8 @@ import pickle
 from util.mnist import load_dataset
 from networks.neural_network import NeuralNetwork
 
-dist_path = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
+DIST_PATH = os.path.dirname(os.path.abspath(__file__)) + '/../../dist'
+DIST_PATH = os.path.realpath(DIST_PATH)
 
 
 def get_batch_mask(total_size, batch_size):
@@ -51,11 +52,10 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
             print(f"       {test_acc:05.2f}%       |", end="")
             print(f"       {percent_complete:05.2f}%       ")
 
-
     print("\nTraining Complete !\n")
 
     if save_network:
-        network.save_network(dist_path + "/network.pkl")
+        network.save_network(DIST_PATH + "/network.pkl")
     else:
         answer = None
         answers = ["y", "yes", "n", "no"]
@@ -65,4 +65,4 @@ def train_network(iterations, batch_size, epoch_length, hidden_layers=[50], save
             if answer not in answers:
                 print("Please response (y/n).")
         if answer == "y" or answer == "yes":
-            network.save_network(dist_path + "/network.pkl")
+            network.save_network(DIST_PATH + "/network.pkl")
