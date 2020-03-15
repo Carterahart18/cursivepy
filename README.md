@@ -6,7 +6,7 @@
 
 "CursivePy" is a project that implements a Neural Network and teaches it to recognize simple handwritten digits. You can configure the network as you please with custom hidden layers, training batch sizes and iterations. You can save and load network weights and biases stored from pervious runs. Your network can then be tested against your own handwriting using a drawing program which simulates the training data.
 
-The 28 x 28 handwritten digit recognition problem is often considered a "hello world" program for neural networks. It is a simple, well defined challenged that can be solved easily via a properly trained Neural Network but is very difficult to solve with conventional discrete programming methods.
+The 28 x 28 handwritten digit recognition problem is often considered a "hello world" program for neural networks. It is a simple, well defined challenge that can be solved easily via a properly trained Neural Network but is very difficult to solve with conventional discrete programming methods.
 
 ## Training the network
 
