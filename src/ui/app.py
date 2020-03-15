@@ -98,6 +98,7 @@ class App():
             else:
                 self.prediction_value.config(fg="red")
             self.prediction_value.config(text=prediction)
+            self.prediction = prediction
 
     def on_clear_down(self, event):
         self.clear_button.config(highlightbackground='#efefef')
@@ -110,7 +111,10 @@ class App():
         value_batch = numpy.array([self.target])
         solution_batch = self.network.convertResultToSolution(value_batch)
         self.network.train(self.image_batch, solution_batch)
-        self.set_target_number()
+
+        if self.target == self.prediction:
+            self.set_target_number()
+
         self.set_prediction(None)
         self.paint.clear()
 
